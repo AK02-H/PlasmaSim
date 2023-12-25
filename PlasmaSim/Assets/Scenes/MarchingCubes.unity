@@ -204,71 +204,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15fb88a9faf23f1479b70f1d7b22a03f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  quotePrecomputeUnquote: 1
+  quotePrecomputeUnquote: 0
   doNotSimulateRendering: 0
+  useBackedUpMeshList: 0
   fileSaveName: 
   framesToPre: 60
-  bakedMeshes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  bakedMeshes: []
   backup:
   - {fileID: 0}
   - {fileID: 0}
@@ -331,10 +272,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   bakedSimulationFPS: 16
+  smoothLikeJazz: 1
   debugPoints: 1
-  width: 90
-  height: 60
-  depth: 40
+  width: 22
+  height: 20
+  depth: 31
   distanceThreshold: 5
   sphereXform: {fileID: 630500465}
   kernel:
@@ -370,7 +312,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 1
     m_RotationOrder: 4
-  sphereVelocity: {x: 1.95, y: 2.33, z: 0}
+  sphereVelocity: {x: 0.71, y: 0.75, z: 0}
   sphereAcceleration: {x: -0.03, y: -0.1, z: 0}
   velocityLimiter: 1
 --- !u!4 &587235878
@@ -412,7 +354,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 630500464}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 17.1, y: 9.6, z: 18}
+  m_LocalPosition: {x: 11, y: 9, z: 18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -573,8 +515,8 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 13.814961
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -597,8 +539,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1547163000}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 11.3, y: 11.01, z: -13.600523}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

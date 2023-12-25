@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Burst;
-
+using UnityEditor.PackageManager.UI;
 
 
 [System.Serializable]
@@ -42,6 +42,7 @@ public class Marching : MonoBehaviour
 	public int bakedSimulationFPS = 10;	//loop through computed meshes
 
 	[Space(40)]
+	[SerializeField] private bool smoothLikeJazz = true;
 	private List<Vector3> vertices = new List<Vector3>();
     private List<int> triangles = new List<int>();
     
@@ -169,14 +170,16 @@ public class Marching : MonoBehaviour
 			    for (int z = 0; z < depth + 1; z++)
 			    {
 				    //for terrain
-				    float thisHeight = (float) height * Mathf.PerlinNoise((float) x / 16 * 1.5f + 0.001f, (float) z / 16f * 1.5f + 0.001f);
+				    //float thisHeight = (float) height * Mathf.PerlinNoise((float) x / 16 * 1.5f + 0.001f, (float) z / 16f * 1.5f + 0.001f);
 				    //float thisHeight = (float) height * PerlinNoise3D((float) x / 16 * 1.5f + 0.001f, (float) y / 16f * 1.5f + 0.001f, (float) z / 16f * 1.5f + 0.001f);
 				    
-				    terrainMap[x, y, z] = (float) y - thisHeight;
-				    Debug.Log($"new vertex value {y - thisHeight}");
+				    //terrainMap[x, y, z] = (float) y - thisHeight;
+				    //Debug.Log($"new vertex value {y - thisHeight}");
 
+				    //Marching cube vertex
 				    Vector3 Q = new Vector3(x, y, z);
 				    
+				    //Distance from center of sphere to this vertex
 				    float thisDistance = Vector3.Distance(Q, spherePoint);
 				    
 				    /*
@@ -185,15 +188,19 @@ public class Marching : MonoBehaviour
 				     * kernel output * velocity
 				     * times that by threshold?
 				     */
-				    
-				     
-				    float thisAngleRad = Vector3.Angle(sphereVelocity, (Q - spherePoint)) * Mathf.Deg2Rad;
+
+				    float thisAngleDeg = Vector3.Angle(Vector3.Normalize(sphereVelocity), (Q - spherePoint));
+				    float thisAngleRad = thisAngleDeg * Mathf.Deg2Rad;
 
 				    float kernelOutput = kernel.Evaluate(thisAngleRad) * sphereVelocity.magnitude * velocityLimiter;
+				    //float kernelOutput = kernel.Evaluate(thisAngleRad) * (sphereVelocity.magnitude + 1) * velocityLimiter;
+				    //float kernelOutput = kernel.Evaluate(thisAngleRad) * velocityLimiter;
+				    //float kernelOutput = Mathf.Cos(thisAngleRad) * velocityLimiter;
 				    float modThreshold = distanceThreshold * kernelOutput;
 
 				    
-				    //terrainMap[x, y, z] = (float) (modThreshold - thisDistance);
+				    terrainMap[x, y, z] = (float) (modThreshold - thisDistance);
+				    Debug.Log($"Angle between velocity {sphereVelocity} and MC vertex {Q} is deg{thisAngleDeg}/rad{thisAngleRad}. Threshold is {modThreshold}");
 
 			    }
 		    }
@@ -208,14 +215,7 @@ public class Marching : MonoBehaviour
 		    {
 			    for (int z = 0; z < depth; z++)
 			    {
-				    float[] cube = new float[8];
-				    for (int i = 0; i < 8; i++)
-				    {
-					    Vector3Int corner = new Vector3Int(x, y, z) + CornerTable[i];
-					    cube[i] = terrainMap[corner.x, corner.y, corner.z];
-				    }
-				    
-				    MarchCube(new Vector3(x, y, z), cube);
+				    MarchCube(new Vector3Int(x, y, z));
 			    }
 		    }
 	    }
@@ -239,18 +239,25 @@ public class Marching : MonoBehaviour
 		    }
 	    }
 
-	    Debug.Log("Config index " + configurationIndex);
+	    //Debug.Log("Config index " + configurationIndex);
 	    return configurationIndex;
     }
     
-    void MarchCube(Vector3 position, float[] cube)
+    void MarchCube(Vector3Int position)
     {
-	    Debug.Log("March cube");
+	    
+	    float[] cube = new float[8];
+	    for (int i = 0; i < 8; i++)
+	    {
+		    cube[i] = SampleTerrain(position + CornerTable[i]);
+	    }
+	    
+	    //Debug.Log("March cube");
 	    int configIndex =  GetCubeConfig(cube);
 	    
 	    if (configIndex == 0 || configIndex == 255)
 	    {
-		    Debug.Log("Returning");
+		    //Debug.Log("Returning");
 		    return;
 	    }
 
@@ -264,10 +271,31 @@ public class Marching : MonoBehaviour
 			    if (indice == -1)
 				    return;
 
-			    Vector3 vert1 = position + EdgeTable[indice, 0];
-			    Vector3 vert2 = position + EdgeTable[indice, 1];
+			    Vector3 vert1 = position + CornerTable[EdgeIndexes[indice, 0]];
+			    Vector3 vert2 = position + CornerTable[EdgeIndexes[indice, 1]];
 
-			    Vector3 vertPosition = (vert1 + vert2) / 2f;
+			    Vector3 vertPosition;
+			    
+			    if (smoothLikeJazz)
+			    {
+				    //Getting terrain values of current edge from cube array
+				    float vert1Sample = cube[EdgeIndexes[indice, 0]];
+				    float vert2Sample = cube[EdgeIndexes[indice, 1]];
+				    
+				    //Difference
+				    float diff = vert2Sample - vert1Sample;
+				    if (diff == 0)
+					    diff = terrainSurface;
+				    else
+					    diff = (terrainSurface - vert1Sample) / diff;
+
+				    //Calculate point along edge
+				    vertPosition = vert1 + ((vert2 - vert1) * diff);
+			    }
+			    else
+			    {
+					vertPosition = (vert1 + vert2) / 2f;
+			    }
 			    
 			    vertices.Add(vertPosition);
 			    triangles.Add(vertices.Count - 1);
@@ -276,6 +304,11 @@ public class Marching : MonoBehaviour
 			    Debug.Log("March cube loop");
 		    }
 	    }
+    }
+
+    float SampleTerrain(Vector3Int point)
+    {
+	    return terrainMap[point.x, point.y, point.z];
     }
     
     void ClearMeshData()
@@ -369,6 +402,7 @@ public class Marching : MonoBehaviour
 	    Gizmos.color = Color.blue;
 	    Vector3 velocityToUse;
 
+	    
 	    if (sphereVelocities.Count == 0)
 	    {
 		    velocityToUse = sphereVelocity;
@@ -409,20 +443,9 @@ public class Marching : MonoBehaviour
 
     };
 
-    Vector3[,] EdgeTable = new Vector3[12, 2] {
+    int[,] EdgeIndexes = new int[12, 2] {
 
-        { new Vector3(0.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 0.0f) },
-        { new Vector3(1.0f, 0.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f) },
-        { new Vector3(0.0f, 1.0f, 0.0f), new Vector3(1.0f, 1.0f, 0.0f) },
-        { new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 1.0f, 0.0f) },
-        { new Vector3(0.0f, 0.0f, 1.0f), new Vector3(1.0f, 0.0f, 1.0f) },
-        { new Vector3(1.0f, 0.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f) },
-        { new Vector3(0.0f, 1.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f) },
-        { new Vector3(0.0f, 0.0f, 1.0f), new Vector3(0.0f, 1.0f, 1.0f) },
-        { new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0.0f, 0.0f, 1.0f) },
-        { new Vector3(1.0f, 0.0f, 0.0f), new Vector3(1.0f, 0.0f, 1.0f) },
-        { new Vector3(1.0f, 1.0f, 0.0f), new Vector3(1.0f, 1.0f, 1.0f) },
-        { new Vector3(0.0f, 1.0f, 0.0f), new Vector3(0.0f, 1.0f, 1.0f) }
+	    {0, 1}, {1, 2}, {3, 2}, {0, 3}, {4, 5}, {5, 6}, {7, 6}, {4, 7}, {0, 4}, {1, 5}, {2, 6}, {3, 7}
 
     };
 
