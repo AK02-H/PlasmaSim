@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Burst;
+using UnityEditor;
 using UnityEditor.PackageManager.UI;
 
 
@@ -31,6 +32,9 @@ public class Marching : MonoBehaviour
 	public bool quotePrecomputeUnquote;
 	public bool doNotSimulateRendering = false;	//for testing sphere positions
 	public bool useBackedUpMeshList = false;
+
+	public bool useLinkedParticles;
+	public LinkedParticleFluid fluidSim;
 	
 	public string fileSaveName;
 	public int framesToPre = 10;
@@ -60,9 +64,12 @@ public class Marching : MonoBehaviour
 
     [SerializeField] private float distanceThreshold = 5f;
     [SerializeField] private Transform sphereXform;
+    [SerializeField] private Transform sphereXform_2;
     private Vector3 spherePoint;
+    private Vector3 spherePoint_2;
     [SerializeField] private AnimationCurve kernel;
     [SerializeField] private Vector3 sphereVelocity;
+    [SerializeField] private Vector3 sphereVelocity_2;
     [SerializeField] private Vector3 sphereAcceleration;
     [SerializeField] private float velocityLimiter = 0.5f;
 
@@ -74,54 +81,90 @@ public class Marching : MonoBehaviour
         terrainMap = new float[width + 1, height + 1, depth + 1];
 
 
-        if (quotePrecomputeUnquote)
-        {
+        Build();
+        
+        
+    }
 
-	        if (!useBackedUpMeshList)
-	        {
-		        for (int i = 0; i < framesToPre; i++)
-		        {
-			        if (!doNotSimulateRendering)
-			        {
-				        ClearMeshData();
-				        PopulateTerrainMap();
-				        CreateMeshData();
-				        BuildMesh();
-			        }
+    public void Build()
+    {
+	    terrainMap = new float[width + 1, height + 1, depth + 1];
+	    if (quotePrecomputeUnquote)
+	    {
 
 
-			        spherePositions.Add(spherePoint);
-			        sphereVelocities.Add(sphereVelocity);
-			        spherePoint += sphereVelocity;
-			        sphereVelocity += sphereAcceleration;
-		        }
-	        }
-	        else
-	        {
-		        for (int i = 0; i < backup.Count; i++)
-		        {
+		    if (useLinkedParticles)
+		    {
+			    for (int i = 0; i < framesToPre; i++)
+			    {
+				    if (!doNotSimulateRendering)
+				    {
+					    ClearMeshData();
+					    PopulateTerrainMap();
+					    CreateMeshData();
+					    BuildMesh();
+				    }
+					    
+				    spherePositions.Add(spherePoint);
+				    sphereVelocities.Add(sphereVelocity);
+				    spherePoint += sphereVelocity;
+				    sphereVelocity += sphereAcceleration;
+				    fluidSim.UpdateSimulation();
+			    }
+		    }
+		    else
+		    {
+			    if (!useBackedUpMeshList)
+			    {
+				    for (int i = 0; i < framesToPre; i++)
+				    {
+					    if (!doNotSimulateRendering)
+					    {
+						    ClearMeshData();
+						    PopulateTerrainMap();
+						    CreateMeshData();
+						    BuildMesh();
+					    }
+					    
+					    spherePositions.Add(spherePoint);
+					    sphereVelocities.Add(sphereVelocity);
+					    spherePoint += sphereVelocity;
+					    sphereVelocity += sphereAcceleration;
+				    }
+			    }
+			    else
+			    {
+				    for (int i = 0; i < backup.Count; i++)
+				    {
 			        
-			        spherePositions.Add(spherePoint);
-			        sphereVelocities.Add(sphereVelocity);
-			        spherePoint += sphereVelocity;
-			        sphereVelocity += sphereAcceleration;
-		        }
+					    spherePositions.Add(spherePoint);
+					    sphereVelocities.Add(sphereVelocity);
+					    spherePoint += sphereVelocity;
+					    sphereVelocity += sphereAcceleration;
+				    }
 		        
-		        bakedMeshes.Clear();
-		        bakedMeshes = backup;
-	        }
+				    bakedMeshes.Clear();
+				    bakedMeshes = backup;
+			    }
+		    }
+		    
 
-	        Application.targetFrameRate = bakedSimulationFPS;
-        }
-        else
-        {
-	        ClearMeshData();
-	        PopulateTerrainMap();
-	        CreateMeshData();
-	        BuildMesh();
-        }
-        
-        
+		    
+		    
+		    
+		    
+		    
+		    
+		    
+		    Application.targetFrameRate = bakedSimulationFPS;
+	    }
+	    else
+	    {
+		    ClearMeshData();
+		    PopulateTerrainMap();
+		    CreateMeshData();
+		    BuildMesh();
+	    }
     }
     
     // Update is called once per frame
@@ -149,6 +192,7 @@ public class Marching : MonoBehaviour
 	    else
 	    {
 		    spherePoint = sphereXform.position;
+		    spherePoint_2 = sphereXform_2.position;
 
 		    if (Input.GetKeyDown(KeyCode.Space))
 		    {
@@ -176,11 +220,6 @@ public class Marching : MonoBehaviour
 				    //terrainMap[x, y, z] = (float) y - thisHeight;
 				    //Debug.Log($"new vertex value {y - thisHeight}");
 
-				    //Marching cube vertex
-				    Vector3 Q = new Vector3(x, y, z);
-				    
-				    //Distance from center of sphere to this vertex
-				    float thisDistance = Vector3.Distance(Q, spherePoint);
 				    
 				    /*
 				     *put radians into kernel
@@ -189,23 +228,107 @@ public class Marching : MonoBehaviour
 				     * times that by threshold?
 				     */
 
-				    float thisAngleDeg = Vector3.Angle(Vector3.Normalize(sphereVelocity), (Q - spherePoint));
-				    float thisAngleRad = thisAngleDeg * Mathf.Deg2Rad;
+				    //Marching cube vertex
 
-				    float kernelOutput = kernel.Evaluate(thisAngleRad) * sphereVelocity.magnitude * velocityLimiter;
-				    //float kernelOutput = kernel.Evaluate(thisAngleRad) * (sphereVelocity.magnitude + 1) * velocityLimiter;
-				    //float kernelOutput = kernel.Evaluate(thisAngleRad) * velocityLimiter;
-				    //float kernelOutput = Mathf.Cos(thisAngleRad) * velocityLimiter;
-				    float modThreshold = distanceThreshold * kernelOutput;
+				    if (!useLinkedParticles)
+				    {
+					    //SpheresTest(spherePoint, sphereVelocity, x, y, z);
+					    //SpheresTest(spherePoint_2, sphereVelocity_2, x, y, z);
+					    SpheresTestMultiple(spherePoint, spherePoint_2, sphereVelocity, sphereVelocity_2, x, y, z);
 
+				    }
+				    else
+				    {
+					    foreach (var p in fluidSim.particles)
+					    {
+						    CalculatePlasmaPopulation(p.pXform.position, p.pVelocity, x, y, z);
+
+					    }
+				    }
 				    
-				    terrainMap[x, y, z] = (float) (modThreshold - thisDistance);
-				    Debug.Log($"Angle between velocity {sphereVelocity} and MC vertex {Q} is deg{thisAngleDeg}/rad{thisAngleRad}. Threshold is {modThreshold}");
-
+				    
+				    
+				    
+				    
+				    
+				    
 			    }
 		    }
 	    }
     }
+
+    void SpheresTest(Vector3 pos, Vector3 vel, int xV, int yV, int zV)
+    {
+	    Vector3 Q = new Vector3(xV, yV, zV);	//point
+	    float thisDistance = Vector3.Distance(Q, pos);
+	    
+	  
+	    
+	    Debug.Log($"Terrain is {terrainMap[xV, yV, zV]}");
+	    if (terrainMap[xV, yV, zV] < distanceThreshold)
+	    {
+		    terrainMap[xV, yV, zV] = (float) (distanceThreshold - thisDistance);
+	    }
+
+
+    }
+    
+    void SpheresTestMultiple(Vector3 pos,Vector3 pos2, Vector3 vel, Vector3 vel2, int xV, int yV, int zV)
+    {
+	    Vector3 Q = new Vector3(xV, yV, zV);	//point
+	    float thisDistance_1 = Vector3.Distance(Q, pos);
+	    
+	    float thisAngleDeg = Vector3.Angle(Vector3.Normalize(vel), (Q - pos)) - 90;
+	    float thisAngleRad = thisAngleDeg * Mathf.Deg2Rad;
+	    float range = (Mathf.Cos(thisAngleRad) + 1) / 2;
+	    float kernelOutput = (kernel.Evaluate(range) * vel.magnitude) + 1;
+	    float modThreshold_1 = distanceThreshold * kernelOutput * velocityLimiter;
+	    
+
+	    if (thisDistance_1 < modThreshold_1)
+	    {
+		    terrainMap[xV, yV, zV] = (float) (modThreshold_1 - thisDistance_1);
+	    }
+	    
+	    float thisDistance_2 = Vector3.Distance(Q, pos2);
+	    thisAngleDeg = Vector3.Angle(Vector3.Normalize(vel2), (Q - pos2)) - 90;
+	    thisAngleRad = thisAngleDeg * Mathf.Deg2Rad;
+	    range = (Mathf.Cos(thisAngleRad) + 1) / 2;
+	    kernelOutput = (kernel.Evaluate(range) * vel2.magnitude) + 1;
+	    float modThreshold_2 = distanceThreshold * kernelOutput * velocityLimiter;
+	    
+	    if (thisDistance_2 < modThreshold_2)
+	    {
+		    terrainMap[xV, yV, zV] = (float) (modThreshold_2 - thisDistance_2);
+	    }
+	    
+
+
+    }
+
+    void CalculatePlasmaPopulation(Vector3 pos, Vector3 vel, int xV, int yV, int zV)
+    {
+	    Vector3 Q = new Vector3(xV, yV, zV);
+				    
+	    //Distance from center of sphere to this vertex
+	    float thisDistance = Vector3.Distance(Q, pos);
+
+	    float thisAngleDeg = Vector3.Angle(Vector3.Normalize(vel), (Q - pos)) - 90;	//gets in degrees
+	    float thisAngleRad = thisAngleDeg * Mathf.Deg2Rad;	//converts to radians
+	    float range = (Mathf.Cos(thisAngleRad) + 1) / 2;
+	    Debug.Log($"RANGE: {range}");
+	    float kernelOutput = (kernel.Evaluate(range) * vel.magnitude) + 1;	//amplifies kernel by particle velocity
+	    Debug.Log($"KERNEL OUTPUT: {range}");
+	    float modThreshold = distanceThreshold * kernelOutput * velocityLimiter;
+	    
+	    terrainMap[xV, yV, zV] = (float) (modThreshold - thisDistance);
+	    Debug.Log($"Angle between velocity {vel} and MC vertex {Q} is deg{thisAngleDeg}/rad{thisAngleRad}. Threshold is {modThreshold}");
+    }
+    
+    
+   // float kernelOutput = kernel.Evaluate(thisAngleRad) * sphereVelocity.magnitude * velocityLimiter;
+    //float kernelOutput = kernel.Evaluate(thisAngleRad) * (sphereVelocity.magnitude + 1) * velocityLimiter;
+    //float kernelOutput = kernel.Evaluate(thisAngleRad) * velocityLimiter;
 
     void CreateMeshData()
     {
@@ -399,6 +522,7 @@ public class Marching : MonoBehaviour
     {
 	    Gizmos.color = Color.green;
 	    Gizmos.DrawWireSphere(sphereXform.position, distanceThreshold);
+	    Gizmos.DrawWireSphere(sphereXform_2.position, distanceThreshold);
 	    Gizmos.color = Color.blue;
 	    Vector3 velocityToUse;
 
@@ -413,18 +537,34 @@ public class Marching : MonoBehaviour
 	    }
 	    
 	    Gizmos.DrawLine(sphereXform.position, sphereXform.position + velocityToUse * 10);
+	    //Gizmos.DrawLine(sphereXform_2.position, sphereXform_2.position + velocityToUse * 10);
 	    
 	    if (!debugPoints) return;
-	    Gizmos.color = new Color(0.4f, 0, 0, 0.1f);
+	    //Gizmos.color = new Color(0.8f, 0, 0, 0.8f);
 	    for (int x = 0; x < width + 1; x++)
 	    {
 		    for (int y = 0; y < height + 1; y++)
 		    {
 			    for (int z = 0; z < depth + 1; z++)
 			    {
-				    //Gizmos.DrawSphere(new Vector3(x, y, z), 0.1f);
-				    Gizmos.DrawWireCube(new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f), Vector3.one);
-
+				    
+				    if (Application.isPlaying)
+				    {
+					    float val = (terrainMap[x, y, z] - (-15)) / (3 - (-15));
+					    //Debug.Log($"COLOUR {val}");
+					    Gizmos.color = new Color(val, val, val, 0.8f);
+					    Gizmos.DrawSphere(new Vector3(x, y, z), 0.1f);
+					    Handles.Label(new Vector3(x, y, z), System.Math.Round(terrainMap[x, y, z], 3).ToString());
+				    }
+				    else
+				    {
+					    Gizmos.color = new Color(0.8f, 0, 0, 0.8f);
+					    //Gizmos.DrawSphere(new Vector3(x, y, z), 0.1f);
+					    Gizmos.DrawWireCube(new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f), Vector3.one);
+				    }
+				    
+				    //
+				    //
 			    }
 		    }
 	    }
