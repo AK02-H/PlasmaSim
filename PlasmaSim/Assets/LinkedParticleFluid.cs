@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class NParticle
 {
-    public Transform pXform;
+    public Transform pXform;            //perhaps using transform is inefficient
     public Vector3 pLastPosition;
     public Vector3 pVelocity;
     public bool isStatic = false;
@@ -15,6 +15,7 @@ public class NParticle
 public class LinkedParticleFluid : MonoBehaviour
 {
     [Range(0.1f, 3f)] public float timeScale = 1;
+    public bool simulate = false;
     public int targetFrameRate = 60;
     public bool useTargetFrameRate;
     public bool automaticSetup = false;
@@ -45,7 +46,7 @@ public class LinkedParticleFluid : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (useTargetFrameRate) Application.targetFrameRate = 60;
+        if (useTargetFrameRate) Application.targetFrameRate = targetFrameRate;
 
         if (automaticSetup)
         {
@@ -77,14 +78,36 @@ public class LinkedParticleFluid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Time.timeScale = timeScale;
+        Time.timeScale = 1;
         
         
-        //UpdateSimulation();
+        if(simulate) UpdateSimulation();
 
         
 
         
+    }
+
+    public Vector3[] GetAllParticlePositions()
+    {
+        Vector3[] toReturn = new Vector3[particles.Length];
+        for (int i = 0; i < particles.Length; i++)
+        {
+            toReturn[i] = particles[i].pXform.position;
+        }
+
+        return toReturn;
+    }
+    
+    public Vector3[] GetAllParticleVelocities()
+    {
+        Vector3[] toReturn = new Vector3[particles.Length];
+        for (int i = 0; i < particles.Length; i++)
+        {
+            toReturn[i] = particles[i].pVelocity;
+        }
+
+        return toReturn;
     }
 
 
@@ -175,8 +198,8 @@ public class LinkedParticleFluid : MonoBehaviour
                 
                     Debug.Log($"Dashpot force = {dashpotForce}");
 
-                    if (!par_1.isStatic) par_1.pXform.position += newForce * (useDashpot ? dashpotForce : 1);
-                    //if (!par_1.isStatic) par_1.pVelocity += newForce * (useDashpot ? dashpotForce : 1);
+                    //if (!par_1.isStatic) par_1.pXform.position += newForce * (useDashpot ? dashpotForce : 1);
+                    if (!par_1.isStatic) par_1.pVelocity += newForce * (useDashpot ? dashpotForce : 1);
                 }
                 else
                 {

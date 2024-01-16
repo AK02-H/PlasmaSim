@@ -73,6 +73,9 @@ public class Marching : MonoBehaviour
     [SerializeField] private Vector3 sphereAcceleration;
     [SerializeField] private float velocityLimiter = 0.5f;
 
+    [SerializeField] private Vector3[] allPoints;
+    [SerializeField] private Vector3[] allVelocities;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -97,6 +100,8 @@ public class Marching : MonoBehaviour
 		    {
 			    for (int i = 0; i < framesToPre; i++)
 			    {
+				    terrainMap = new float[width + 1, height + 1, depth + 1];
+
 				    if (!doNotSimulateRendering)
 				    {
 					    ClearMeshData();
@@ -107,8 +112,8 @@ public class Marching : MonoBehaviour
 					    
 				    spherePositions.Add(spherePoint);
 				    sphereVelocities.Add(sphereVelocity);
-				    spherePoint += sphereVelocity;
-				    sphereVelocity += sphereAcceleration;
+				    //spherePoint += sphereVelocity;
+				    //sphereVelocity += sphereAcceleration;
 				    fluidSim.UpdateSimulation();
 			    }
 		    }
@@ -118,6 +123,8 @@ public class Marching : MonoBehaviour
 			    {
 				    for (int i = 0; i < framesToPre; i++)
 				    {
+					    terrainMap = new float[width + 1, height + 1, depth + 1];
+					    
 					    if (!doNotSimulateRendering)
 					    {
 						    ClearMeshData();
@@ -128,8 +135,14 @@ public class Marching : MonoBehaviour
 					    
 					    spherePositions.Add(spherePoint);
 					    sphereVelocities.Add(sphereVelocity);
-					    spherePoint += sphereVelocity;
-					    sphereVelocity += sphereAcceleration;
+					    //spherePoint += sphereVelocity;
+					    //sphereVelocity += sphereAcceleration;
+
+
+					    for (int j = 0; j < allPoints.Length; j++)
+					    {
+						    allPoints[j] += allVelocities[j];
+					    }
 				    }
 			    }
 			    else
@@ -139,8 +152,8 @@ public class Marching : MonoBehaviour
 			        
 					    spherePositions.Add(spherePoint);
 					    sphereVelocities.Add(sphereVelocity);
-					    spherePoint += sphereVelocity;
-					    sphereVelocity += sphereAcceleration;
+					    //spherePoint += sphereVelocity;
+					    //sphereVelocity += sphereAcceleration;
 				    }
 		        
 				    bakedMeshes.Clear();
@@ -234,16 +247,17 @@ public class Marching : MonoBehaviour
 				    {
 					    //SpheresTest(spherePoint, sphereVelocity, x, y, z);
 					    //SpheresTest(spherePoint_2, sphereVelocity_2, x, y, z);
-					    SpheresTestMultiple(spherePoint, spherePoint_2, sphereVelocity, sphereVelocity_2, x, y, z);
+					    //SpheresTestMultiple(spherePoint, spherePoint_2, sphereVelocity, sphereVelocity_2, x, y, z);
+
+					    Vector3[] positions = new Vector3[] {spherePoint, spherePoint_2};
+					    Vector3[] velocities = new Vector3[] {sphereVelocity, sphereVelocity_2};
+					    MarchPlasmasMultiple(allPoints, allVelocities, x, y, z);
 
 				    }
 				    else
 				    {
-					    foreach (var p in fluidSim.particles)
-					    {
-						    CalculatePlasmaPopulation(p.pXform.position, p.pVelocity, x, y, z);
-
-					    }
+					    
+					    MarchPlasmasMultiple(fluidSim.GetAllParticlePositions(), fluidSim.GetAllParticleVelocities(), x, y, z);
 				    }
 				    
 				    
@@ -305,6 +319,33 @@ public class Marching : MonoBehaviour
 
 
     }
+    
+    
+    void MarchPlasmasMultiple(Vector3[] positions, Vector3[] velocities, int xV, int yV, int zV)
+    {
+	    Vector3 Q = new Vector3(xV, yV, zV);	//point
+
+	    for (int i = 0; i < positions.Length; i++)
+	    {
+		    float thisDistance = Vector3.Distance(Q, positions[i]);
+	    
+		    float thisAngleDeg = Vector3.Angle(Vector3.Normalize(velocities[i]), (Q - positions[i])) - 90;
+		    float thisAngleRad = thisAngleDeg * Mathf.Deg2Rad;
+		    float range = (Mathf.Cos(thisAngleRad) + 1) / 2;
+		    float kernelOutput = (kernel.Evaluate(range) * velocities[i].magnitude) + 1;
+		    float modThreshold = distanceThreshold * kernelOutput * velocityLimiter;
+	    
+
+		    if (thisDistance < modThreshold)
+		    {
+			    terrainMap[xV, yV, zV] = (float) (modThreshold - thisDistance);
+		    }
+	    }
+	    
+
+    }
+    
+    
 
     void CalculatePlasmaPopulation(Vector3 pos, Vector3 vel, int xV, int yV, int zV)
     {
@@ -520,23 +561,30 @@ public class Marching : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-	    Gizmos.color = Color.green;
-	    Gizmos.DrawWireSphere(sphereXform.position, distanceThreshold);
-	    Gizmos.DrawWireSphere(sphereXform_2.position, distanceThreshold);
-	    Gizmos.color = Color.blue;
-	    Vector3 velocityToUse;
+	    //Gizmos.DrawWireSphere(sphereXform_2.position, distanceThreshold);
+	    //Vector3 velocityToUse;
 
+
+	    for (int i = 0; i < allPoints.Length; i++)
+	    {
+		    Gizmos.color = Color.green;
+		    Gizmos.DrawWireSphere(allPoints[i], distanceThreshold);
+		    Gizmos.color = Color.blue;
+		    Gizmos.DrawLine(allPoints[i], allPoints[i] + allVelocities[i] * 6);
+	    }
+	
 	    
-	    if (sphereVelocities.Count == 0)
+	    
+	    
+	    /*if (sphereVelocities.Count == 0)
 	    {
 		    velocityToUse = sphereVelocity;
 	    }
 	    else
 	    {
 		    velocityToUse = sphereVelocities[bakedMeshIndex];
-	    }
+	    }*/
 	    
-	    Gizmos.DrawLine(sphereXform.position, sphereXform.position + velocityToUse * 10);
 	    //Gizmos.DrawLine(sphereXform_2.position, sphereXform_2.position + velocityToUse * 10);
 	    
 	    if (!debugPoints) return;
@@ -551,6 +599,7 @@ public class Marching : MonoBehaviour
 				    if (Application.isPlaying)
 				    {
 					    float val = (terrainMap[x, y, z] - (-15)) / (3 - (-15));
+					    //float val = (terrainMap[x, y, z] / distanceThreshold);
 					    //Debug.Log($"COLOUR {val}");
 					    Gizmos.color = new Color(val, val, val, 0.8f);
 					    Gizmos.DrawSphere(new Vector3(x, y, z), 0.1f);

@@ -635,6 +635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeScale: 1.08
+  simulate: 0
   targetFrameRate: 60
   useTargetFrameRate: 0
   automaticSetup: 0
@@ -1073,18 +1074,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: depth
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: width
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: height
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
       propertyPath: fluidSim
       value: 
       objectReference: {fileID: 1377906086}
@@ -1096,22 +1085,6 @@ PrefabInstance:
       propertyPath: sphereXform_2
       value: 
       objectReference: {fileID: 792374047}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: sphereVelocity.x
-      value: 0.62
-      objectReference: {fileID: 0}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: sphereVelocity.y
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: distanceThreshold
-      value: 3.21
-      objectReference: {fileID: 0}
-    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
-      propertyPath: sphereVelocity_2.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3564366164820776835, guid: e774237b980c4a54d99f42922e75afec, type: 3}
       propertyPath: m_Name
       value: MarchingCube
