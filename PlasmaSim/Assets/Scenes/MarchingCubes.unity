@@ -221,7 +221,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 419288417}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.64, y: 13.599999, z: 0}
+  m_LocalPosition: {x: 9.64, y: 13.599999, z: 0.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -594,17 +594,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!114 &1377906086 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
-  m_PrefabInstance: {fileID: 393984809029587220}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b68892dc72f7e543ab5cb6429e4a520, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1537072499
 GameObject:
   m_ObjectHideFlags: 0
@@ -621,7 +610,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1537072500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -634,10 +623,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b68892dc72f7e543ab5cb6429e4a520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeScale: 1.08
+  timeScale: 1
   simulate: 0
   targetFrameRate: 60
-  useTargetFrameRate: 0
+  useTargetFrameRate: 1
   automaticSetup: 0
   setupCount: 3
   particleTemplate: {fileID: 7813579817963025614, guid: c633b0dc9f372fd4bb3e812fafbcb95d, type: 3}
@@ -645,27 +634,27 @@ MonoBehaviour:
   particles:
   - pXform: {fileID: 894438102}
     pLastPosition: {x: 0, y: 0, z: 0}
-    pVelocity: {x: -0.21, y: -3.38, z: 0}
-    isStatic: 1
+    pVelocity: {x: 0, y: 0, z: 0}
+    isStatic: 0
     isAttached: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   - pXform: {fileID: 597926121}
     pLastPosition: {x: 0, y: 0, z: 0}
-    pVelocity: {x: 0.79, y: -0.6, z: 0}
+    pVelocity: {x: 0, y: 0, z: 0}
     isStatic: 0
     isAttached: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   - pXform: {fileID: 2074774438}
     pLastPosition: {x: 0, y: 0, z: 0}
-    pVelocity: {x: 0.75, y: 0.94, z: 0}
+    pVelocity: {x: 0, y: 0, z: 0}
     isStatic: 0
     isAttached: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   - pXform: {fileID: 419288421}
     pLastPosition: {x: 0, y: 0, z: 0}
-    pVelocity: {x: 1.44, y: -0.7, z: 0}
+    pVelocity: {x: 0, y: 0, z: 0}
     isStatic: 0
     isAttached: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   - pXform: {fileID: 1560585917}
     pLastPosition: {x: 0, y: 0, z: 0}
-    pVelocity: {x: 0.57, y: 0.78, z: 0}
+    pVelocity: {x: 0, y: 0, z: 0}
     isStatic: 0
     isAttached: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   particleSpeedModifier: 1
@@ -674,12 +663,12 @@ MonoBehaviour:
   linkBreakLength: 6
   linkBreakForce: 0.03
   linkAttracctLength: 4
-  springeCoef: 0.001
+  springeCoef: 0.5
   springCompressCoef: 0.01
   useDashpot: 1
   dashPotCoef: 0.5
-  bounds: {x: 13, y: 13, z: 15.2}
-  boundPosition: {x: 12.83, y: 12.9, z: 0}
+  bounds: {x: 11, y: 10.7, z: 8}
+  boundPosition: {x: 13.02, y: 12.59, z: 10.45}
   wallBounceStrength: 1
   sphereRadius: 1
 --- !u!4 &1537072501
@@ -690,7 +679,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1537072499}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 2.69, y: 0, z: 9.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1012,9 +1001,81 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: dashPotCoef
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: sphereRadius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: linkBreakForce
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: linkRestLength
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: linkBreakLength
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: linkAttracctLength
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: springCompressCoef
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[0].pVelocity.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[0].pVelocity.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[1].pVelocity.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[1].pVelocity.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[2].pVelocity.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[2].pVelocity.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[3].pVelocity.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[3].pVelocity.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[4].pVelocity.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3018203326942995307, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: particles.Array.data[4].pVelocity.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3040132195337845168, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
       propertyPath: m_Name
       value: Linked Particle System (For plasma)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3040132195337845168, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6665294692430299885, guid: ea5a7b3ed97250d4187a5a34fcac4749, type: 3}
       propertyPath: m_RootOrder
@@ -1074,9 +1135,29 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: depth
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: width
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: height
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
       propertyPath: fluidSim
       value: 
-      objectReference: {fileID: 1377906086}
+      objectReference: {fileID: 1537072500}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: debugPoints
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: framesToPre
+      value: 600
+      objectReference: {fileID: 0}
     - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
       propertyPath: sphereXform
       value: 
@@ -1085,9 +1166,81 @@ PrefabInstance:
       propertyPath: sphereXform_2
       value: 
       objectReference: {fileID: 792374047}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: smoothLikeJazz
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: distanceThreshold
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: bakedSimulationFPS
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: useLinkedParticles
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: allPoints.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: quotePrecomputeUnquote
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: allVelocities.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: allPoints.Array.data[0].x
+      value: 9.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: allPoints.Array.data[0].y
+      value: 12.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: allPoints.Array.data[0].z
+      value: 6.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[0].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[2].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[0].inSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[2].inSlope
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[0].outSlope
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 671729049498281250, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: kernel.m_Curve.Array.data[2].outSlope
+      value: -2
+      objectReference: {fileID: 0}
     - target: {fileID: 3564366164820776835, guid: e774237b980c4a54d99f42922e75afec, type: 3}
       propertyPath: m_Name
       value: MarchingCube
+      objectReference: {fileID: 0}
+    - target: {fileID: 3564366164820776835, guid: e774237b980c4a54d99f42922e75afec, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8143772089932237453, guid: e774237b980c4a54d99f42922e75afec, type: 3}
       propertyPath: m_RootOrder

@@ -228,9 +228,8 @@ public class Marching : MonoBehaviour
 			    {
 				    //for terrain
 				    //float thisHeight = (float) height * Mathf.PerlinNoise((float) x / 16 * 1.5f + 0.001f, (float) z / 16f * 1.5f + 0.001f);
-				    //float thisHeight = (float) height * PerlinNoise3D((float) x / 16 * 1.5f + 0.001f, (float) y / 16f * 1.5f + 0.001f, (float) z / 16f * 1.5f + 0.001f);
 				    
-				    //terrainMap[x, y, z] = (float) y - thisHeight;
+				   //terrainMap[x, y, z] = (float) y - thisHeight;
 				    //Debug.Log($"new vertex value {y - thisHeight}");
 
 				    
@@ -243,6 +242,9 @@ public class Marching : MonoBehaviour
 
 				    //Marching cube vertex
 
+				    
+				    
+				    
 				    if (!useLinkedParticles)
 				    {
 					    //SpheresTest(spherePoint, sphereVelocity, x, y, z);
@@ -361,7 +363,8 @@ public class Marching : MonoBehaviour
 	    float kernelOutput = (kernel.Evaluate(range) * vel.magnitude) + 1;	//amplifies kernel by particle velocity
 	    Debug.Log($"KERNEL OUTPUT: {range}");
 	    float modThreshold = distanceThreshold * kernelOutput * velocityLimiter;
-	    
+	    //float modThreshold = distanceThreshold / kernelOutput * velocityLimiter;
+	    Debug.Log("Test");
 	    terrainMap[xV, yV, zV] = (float) (modThreshold - thisDistance);
 	    Debug.Log($"Angle between velocity {vel} and MC vertex {Q} is deg{thisAngleDeg}/rad{thisAngleRad}. Threshold is {modThreshold}");
     }
@@ -559,7 +562,7 @@ public class Marching : MonoBehaviour
 	    }
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
 	    //Gizmos.DrawWireSphere(sphereXform_2.position, distanceThreshold);
 	    //Vector3 velocityToUse;
